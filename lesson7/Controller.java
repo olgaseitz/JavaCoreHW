@@ -1,27 +1,43 @@
 package lesson7;
 
+import lesson7.enums.Functionality;
+import lesson7.enums.Period;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Controller {
-    private WeatherModel weatherModel = new AccuweatherModel();
-    private Map<Integer, Period> variants = new HashMap<>();
+
+    WeatherProvider weatherProvider = new AccuWeatherProvider();
+    Map<Integer, Functionality> variantResult = new HashMap();
 
     public Controller() {
-        variants.put(1, Period.NOW);
-        variants.put(5, Period.FIVE_DAYS);
+        variantResult.put(1, Functionality.GET_CURRENT_WEATHER);
+        variantResult.put(2, Functionality.GET_WEATHER_IN_NEXT_5_DAYS);
     }
 
-    public void getWeather(String userInput, String selectedCity) throws IOException {
-        Integer userIntegerInput = Integer.parseInt(userInput);
-
-        switch (variants.get(userIntegerInput)) {
-            case NOW:
-                weatherModel.getWeather(selectedCity, Period.NOW);
-                break;
-            case FIVE_DAYS:
-                throw new IOException("Метод не реализован!");
+    public void onUserInput(String input) throws IOException {
+        int command = Integer.parseInt(input);
+        if (!variantResult.containsKey(command)) {
+            throw new IOException("There is no command for command-key " + command);
         }
+
+        switch (variantResult.get(command)) {
+            case GET_CURRENT_WEATHER:
+                getCurrentWeather();
+                break;
+            case GET_WEATHER_IN_NEXT_5_DAYS:
+                getWeatherIn5Days();
+                break;
+        }
+    }
+
+    public void getCurrentWeather() throws IOException {
+        weatherProvider.getWeather(Period.NOW);
+    }
+
+    public void getWeatherIn5Days() {
+        throw new RuntimeException("Implement in h/w");
     }
 }
